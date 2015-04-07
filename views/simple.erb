@@ -1,0 +1,44 @@
+<!doctype html>
+
+<html>
+<body>
+  <div id = "field">
+  </div>
+</body>
+<script src="../js/jquery-1.11.2.min.js"></script>
+<script src="../js/speckled_moth.js"></script>
+<script src="../js/speckled_moth_tests.js"></script>
+<script src="../js/sylvester.js"></script>
+
+</html>
+
+<!-- 
+:project notes:
+the objective is simulate the kind of natural selection experienced by the speckled moths during the industrial revolution.
+main objects
+moths:
+  little circles of a randomly selected color which can be clicked on to remove from play.
+a field which is a solid color:
+  the field mimics the environment of creatures to hide in.
+behaviors:
+  == A moth has a velocity which will update it's position. Every time interval T the moths speed and direction will be randomly reassigned.
+  == a moth, on click, will "die" and to speed things along, every moth nearby it in color space also has a chance of dieing. This will probably be a gaussian distribution.
+  == dead moths will be logged for data analysis purposes.
+  == the field will have N moths
+  == when the field has N-D moths, D pairs of moths will be chosen at random and their color will averaged together with a bit of fudge-factor introduced to represent sexual reproduction and mutation.
+
+program flow:
+  1. initialize field with size parameter(L), population parameter(N), mutation parameter(MUT), click spread parameter(SPRD) √
+  2. generate linear distribution of moths with event handle B (ehB)
+  3. begin time loop A(tlA)
+  tlA.1. choose a random velocity
+  tlA.2. start time loop B
+    tlB.1 increment moth position by velocity
+    tlB.2 check for boundary crossing
+      if out of bounds, richochet
+  ehB.t (triggers on click of moth div)
+  ehB.1 fetches color vector of clicked moth. targetColor
+  ehB.2 iterates over each moth giving them a percent of dieing equal to e^([targetColor-self.color]^2/[SPRD]^2)√
+  ehB.3 Math.Random generates a survival score, if survival score exceeds chance of death, they survive, else, die.√
+  ehB.4 run repopulate method on field object √
+ -->
