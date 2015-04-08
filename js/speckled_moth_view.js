@@ -6,7 +6,7 @@ function fieldView(field){
     this.$el.css("position", "relative");
     this.$el.css("height", this.field.size+"px")
     this.$el.css("width", this.field.size+"px")
-    this.$el.css("background-color", vectorToHex(this.field.fieldColor))
+    this.$el.css("background-color", vectorToRGB(this.field.fieldColor))
     this.$el.appendTo($("body"))
   };
   return API
@@ -18,7 +18,7 @@ function mothView (moth){
   API.setup = function(){
     // var divID = 'moth_'+this.moth.idNum;
     // this.moth.$el = $("<div id='"+divID+"'></div>");
-    this.moth.$el.css("background-color", vectorToHex(this.moth.color));
+    this.moth.$el.css("background-color", vectorToRGB(this.moth.color));
     this.moth.$el.css("position", "absolute");
     this.moth.$el.css("height", this.moth.diameter+"px");
     this.moth.$el.css("width", this.moth.diameter+"px");
@@ -26,6 +26,12 @@ function mothView (moth){
     this.moth.$el.css("top", (this.moth.pY-this.moth.diameter/2)+"px");
     this.moth.$el.css("border-radius", "50%");
     this.moth.$el.appendTo(this.moth.field.view.$el);
+    this.moth.$el.on( "click", 
+      function(){
+        this.moth.field.depopulate(this.moth.color);
+        this.moth.field.repopulate();
+      }.bind(this)
+    )
     // console.log(this)
   };
   API.update = function(){

@@ -86,6 +86,12 @@ describe("The moth object", function(){
     expect(typeof(testMoth) ).toBe("object");
   });
 
+  it("Mating produces a valid color", function(){
+    var p1 = new Moth()
+    var p2 = new Moth()
+    var offspring = p1.mate(p2)
+    expect(vectorToHex(offspring).length).toBe(7);
+  });
   it("Choose direction alters", function(){
     var testMoth = new Moth()
     var oldV = [testMoth.vX, testMoth.vY]
@@ -114,7 +120,7 @@ describe("The moth object", function(){
     var testMoth = new Moth()
     testMoth.chooseDirection()
     // var oldP = [testMoth.pX, testMoth.pY]
-    for(var i=0; i<100; i++){
+    for(var i=0; i<2000; i++){
       testMoth.moveStep()
       if(i%500===499){console.log(testMoth)}
     }
@@ -123,4 +129,16 @@ describe("The moth object", function(){
     // var inside = ((0<testMoth.pX)||(testMoth.pX<bound)) &&  ((0<testMoth.pY)||(testMoth.pY<bound))  
     expect(inside ).toBe(true);
   });
+});
+
+describe("utility functions", function(){
+  it("random color vec only gives valid colors", function(){
+    var valid = true
+    for(i=0; i <300; i++){
+      var vec = randomColorVec()
+      valid = valid $$ vectorToHex(vec).length === 7
+    };
+    expect(valid  ).toBe(true);
+  });
+
 });
