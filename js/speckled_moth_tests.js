@@ -86,4 +86,41 @@ describe("The moth object", function(){
     expect(typeof(testMoth) ).toBe("object");
   });
 
+  it("Choose direction alters", function(){
+    var testMoth = new Moth()
+    var oldV = [testMoth.vX, testMoth.vY]
+    testMoth.chooseDirection()
+    var change = oldV[0]!==testMoth.vX || oldV[1]!==testMoth.vY 
+    expect(change ).toBe(true);
+  });
+
+  it("Choose direction alters it's velocity", function(){
+    var testMoth = new Moth()
+    var oldV = [testMoth.vX, testMoth.vY]
+    testMoth.chooseDirection()
+    var change = oldV[0]!==testMoth.vX || oldV[1]!==testMoth.vY 
+    expect(change ).toBe(true);
+  });
+
+  it("moveStep changes it's position", function(){
+    var testMoth = new Moth()
+    testMoth.chooseDirection(1,1)
+    var oldP = [testMoth.pX, testMoth.pY]
+    testMoth.moveStep()    
+    var change = oldP[0]+1 ===testMoth.pX && oldP[1]+1===testMoth.pY 
+    expect(change ).toBe(true);
+  });
+  it("moveStep does not move it out of bounds", function(){
+    var testMoth = new Moth()
+    testMoth.chooseDirection()
+    // var oldP = [testMoth.pX, testMoth.pY]
+    for(var i=0; i<100; i++){
+      testMoth.moveStep()
+      if(i%500===499){console.log(testMoth)}
+    }
+    var bound = testMoth.field.size
+    var inside = (testMoth.pX%bound === testMoth.pX) && (testMoth.pY%bound === testMoth.pY) 
+    // var inside = ((0<testMoth.pX)||(testMoth.pX<bound)) &&  ((0<testMoth.pY)||(testMoth.pY<bound))  
+    expect(inside ).toBe(true);
+  });
 });
