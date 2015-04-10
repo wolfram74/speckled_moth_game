@@ -8,5 +8,6 @@ function main(){
   field.populate();
   field.changeMoths()
   field.moveMoths()
+  field.updateStats()
   // debugger
 };

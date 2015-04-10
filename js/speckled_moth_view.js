@@ -1,13 +1,31 @@
 function fieldView(field){
   var API = {field: field}
+  var divID = "field"
+  API.$el = $("<div id='"+divID+"''></div>")
+  API.$pop = $("<div id='pop'></div>")
+  API.$colorBox = $("<div id='average_color'></div>")
   API.setup = function(){
-    var divID = "field"
-    this.$el = $("<div id='"+divID+"''></div>")
-    this.$el.css("position", "relative");
-    this.$el.css("height", this.field.size+"px")
-    this.$el.css("width", this.field.size+"px")
-    this.$el.css("background-color", vectorToRGB(this.field.fieldColor))
-    this.$el.appendTo($("body"))
+    API.$el.css("position", "relative");
+    API.$el.css("height", this.field.size+"px")
+    API.$el.css("width", this.field.size+"px")
+    API.$el.css("background-color", vectorToRGB(this.field.fieldColor))
+    API.$el.appendTo($("body"))
+    API.$pop.appendTo($("body"))
+    API.$colorBox.appendTo($("body"))
+    var popSummary = "There are currently :" + this.field.liveMoths.length + " living moths."
+    var colorDeltBar = this.field.averageDistance().distanceFrom(this.field.fieldColor)
+    var colorSummary = "The population has an average distance of : " +  colorDeltBar + " color units"
+    API.$pop.text(popSummary )
+    API.$colorBox.text( colorSummary )
+
+  };
+
+  API.updateStats = function(){
+    var popSummary = "There are currently :" + this.field.liveMoths.length + " living moths."
+    var colorDeltBar = this.field.averageDistance().distanceFrom(this.field.fieldColor)
+    var colorSummary = "The population has an average distance of : " +  colorDeltBar + " color units"
+    API.$pop.text(popSummary )
+    API.$colorBox.text( colorSummary )    
   };
   return API
 }

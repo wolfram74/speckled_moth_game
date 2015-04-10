@@ -68,6 +68,14 @@ var Field = function(args){
   this.view = fieldView(this)
 };
 
+Field.prototype.averageDistance = function(){
+  var groupColor = Vector.Zero(3)
+  for(var index in this.liveMoths){
+    groupColor = groupColor.add(this.liveMoths[index].color)
+  };
+  return groupColor.multiply(1/this.liveMoths.length)
+};
+
 Field.prototype.addMoth = function(color){
   var args = {
     field: this, 
@@ -144,6 +152,11 @@ Field.prototype.changeMoths = function(){
     this.liveMoths[index].chooseDirection()
   };
   setTimeout(this.changeMoths.bind(this), 3000)  
+};
+
+Field.prototype.updateStats = function(){
+  this.view.updateStats()
+  setTimeout(this.updateStats.bind(this), 500)
 };
 
 var Moth = function(args){
