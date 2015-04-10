@@ -16,7 +16,8 @@ function randomColorVec (){
 function vectorToRGB(vector){
   var color = "rgba("
   for(var index in vector.elements){
-    color = color + vector.elements[index]+",";
+    var value = pad(vector.elements[index],3,0)
+    color = color + value +",";
   };
   color = color +"1)"
   return color
@@ -35,6 +36,12 @@ function gaussianBoxMuller(mean, sigma){
 function sample(array){
   var index = Math.floor(Math.random()*array.length )
   return array[index]
+};
+
+function pad(n, width, z) {
+  z = z || '0';
+  n = n + '';
+  return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
 }
 // a.distanceFrom(b)
 
@@ -60,6 +67,7 @@ var Field = function(args){
   this.deadMoths = []
   this.view = fieldView(this)
 };
+
 Field.prototype.addMoth = function(color){
   var args = {
     field: this, 
@@ -105,6 +113,10 @@ Field.prototype.repopulate = function(){
     console.log("detected extinction event, rebooting")
   };
   var deficit = this.population - this.liveMoths.length;
+  var lastKill = Date.now() - this.deadMoths[this.deadMoths.length-1].timeOfDeath
+  if (deficit < 15 && lastKill < 30000){
+    return;
+  };
   var pairs = [];
   while(pairs.length < deficit){
     var pair0 = sample(this.liveMoths)
@@ -142,7 +154,6 @@ var Moth = function(args){
     idNum: 0
     }
   args = merge(defaults, args)
-  // console.log(args)
   this.field = args["field"]
   this.idNum = args["idNum"];
   this.color = args["colorVec"];
@@ -213,15 +224,3 @@ Moth.prototype.die = function(){
 
 // ============ end object definitions
 
-$(document).ready(function() {
-  main();
-});
-
-function main(){
-  var field = new Field();
-  field.view.setup();
-  field.populate();
-  field.changeMoths()
-  field.moveMoths()
-  // debugger
-};

@@ -58,6 +58,7 @@ describe("The field object", function(){
     var testField = new Field({"population": 3})
     testField.populate()
     testField.depopulate(testField.liveMoths[0].color)
+    testField.deadMoths[testField.deadMoths.length-1].timeOfDeath = 0
     testField.repopulate()
     expect(testField.liveMoths.length ).toBe(3);
   });
@@ -66,6 +67,7 @@ describe("The field object", function(){
     testField.populate()
     testField.depopulate(testField.liveMoths[0].color)
     testField.depopulate(testField.liveMoths[0].color)
+    testField.deadMoths[testField.deadMoths.length-1].timeOfDeath = 0
     testField.repopulate()
     expect(testField.liveMoths.length ).toBe(3);
   });
@@ -90,7 +92,7 @@ describe("The moth object", function(){
     var p1 = new Moth()
     var p2 = new Moth()
     var offspring = p1.mate(p2)
-    expect(vectorToHex(offspring).length).toBe(7);
+    expect(vectorToRGB(offspring).length).toBe(19);
   });
   it("Choose direction alters", function(){
     var testMoth = new Moth()
@@ -136,9 +138,9 @@ describe("utility functions", function(){
     var valid = true
     for(i=0; i <300; i++){
       var vec = randomColorVec()
-      valid = valid $$ vectorToHex(vec).length === 7
+      valid = valid && vectorToRGB(vec).length === 19
     };
-    expect(valid  ).toBe(true);
+    expect(valid).toBe(true);
   });
 
 });
