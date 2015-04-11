@@ -1,3 +1,4 @@
+// you clearly love tests. Thats fucking awesome!!!!
 describe("The field object", function(){
   it("Can be created", function(){
     var testField = new Field()

@@ -1,4 +1,4 @@
-function fieldView(field){
+MS.fieldView = function(field){
   var API = {field: field}
   var divID = "field"
   API.$el = $("<div id='"+divID+"''></div>")
@@ -30,7 +30,7 @@ function fieldView(field){
   return API
 }
 
-function mothView (moth){
+SM.mothView = function(moth){
   var API ={moth: moth}
   // console.log(this.moth)
   API.setup = function(){
