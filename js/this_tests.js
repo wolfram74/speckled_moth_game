@@ -3,6 +3,7 @@ var Test = function (){
   this.sublevel = deep(this)
 }
 
+// dont test too deep. You'll get stuck in the world at the end of inception. 
 function deep(test){
   var API = {test:test}
   API.context = function(){console.log("context");console.log(this.test);}
@@ -12,6 +13,6 @@ function deep(test){
 
 var see = new Test()
 console.log(see)
-console.log(see.butts)
+console.log(see.butts) // everywhere!
 console.log(see.sublevel.context())
-console.log(see.sublevel.toot())
+console.log(see.sublevel.toot()) // ha!
