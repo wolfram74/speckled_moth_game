@@ -42,7 +42,15 @@ function pad(n, width, z) {
   z = z || '0';
   n = n + '';
   return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
-}
+};
+
+function critterSeperation(crit1, crit2){
+  var delX = crit1.pX - crit2.pX
+  var delY = crit1.pY - crit2.pY  
+  var magSqr = Math.pow(delX,2)+Math.pow(delX,2);
+  var mag = Math.pow(magSqr, 0.5);
+  return mag
+};
 // a.distanceFrom(b)
 
 // ============ end utility functions
@@ -54,7 +62,7 @@ var Field = function(args){
     size: 700, // total area of 490000
     population: 150,
     geneSpread: 4,
-    clickSpread: 2
+    clickSpread: 1
   };
   args = merge(defaults, args)
   this.population = args["population"]
@@ -65,6 +73,7 @@ var Field = function(args){
   this.mothCount = 0
   this.liveMoths = []
   this.deadMoths = []
+  this.predators = []
   this.view = fieldView(this)
 };
 
@@ -82,13 +91,18 @@ Field.prototype.addMoth = function(color){
     colorVec: color, 
     idNum: this.mothCount
   };
-  f0Moth = new Moth(args);
-  // console.log("made new moth", this.mothCount)
+  var f0Moth = new Moth(args);
   f0Moth.view.setup()
   this.liveMoths.push(f0Moth)
   this.mothCount++
-
 };
+
+Field.prototype.addPredator = function(moth){
+  var newPred = new Predator({initTarget: moth})
+  newPred.view.setup()
+  this.predators.push(newPred)
+}
+
 Field.prototype.populate = function(){
   for(i=0; i<this.population; i++){
     newColor = randomColorVec()
@@ -111,15 +125,16 @@ Field.prototype.depopulate = function(effectedColor){
 };
 
 Field.prototype.repopulate = function(){
-  console.log("population boost")
+  if (!!!this.deadMoths.length){return}
   if (this.liveMoths.length === 1){
-    newColor = randomColorVec()
+    var newColor = randomColorVec()
     this.addMoth(newColor)
     console.log("made new moth in repopulate")
   } else if (this.liveMoths.length === 0){
     this.populate();
     console.log("detected extinction event, rebooting")
   };
+
   var deficit = this.population - this.liveMoths.length;
   var lastKill = Date.now() - this.deadMoths[this.deadMoths.length-1].timeOfDeath
   if (deficit < 15 && lastKill < 30000){
@@ -144,6 +159,7 @@ Field.prototype.moveMoths = function(){
   for(var index in this.liveMoths){
     this.liveMoths[index].moveStep()
   };
+  this.movePredators()
   setTimeout(this.moveMoths.bind(this), 31)
 };
 
@@ -152,6 +168,20 @@ Field.prototype.changeMoths = function(){
     this.liveMoths[index].chooseDirection()
   };
   setTimeout(this.changeMoths.bind(this), 3000)  
+};
+
+Field.prototype.movePredators = function(){
+  for(var ind=this.predators.length-1; ind > -1; ind--){
+    var currentPred = this.predators[ind]
+    currentPred.homeIn()
+    currentPred.chooseSpeed()
+    currentPred.moveStep()
+    currentPred.engageTarget()
+    if (currentPred.killCount >= 10){
+      currentPred.$el.hide()
+      this.predators.splice(ind, 1)
+    };
+  };
 };
 
 Field.prototype.updateStats = function(){
@@ -233,6 +263,82 @@ Moth.prototype.die = function(){
   this.timeOfDeath = Date.now();
   this.$el.off()
   this.$el.hide()
+  this.field.repopulate()
+};
+
+var Predator = function(args){
+  args = args || {};
+  var defaults = {
+    initTarget: new Moth()
+  };
+  args = merge(defaults, args);
+  this.initTarget = args["initTarget"];
+  this.currentTarge = args["initTarget"];
+  this.pX = this.initTarget.pX;
+  this.pY = this.initTarget.pY;
+  this.vX = 0;
+  this.vY = 0;
+  this.killCount = 0;
+  var divID = 'pred_'+this.initTarget.idNum;
+  this.$el = $("<div id='"+divID+"'></div>");  
+  this.view = predView(this)
+};
+
+Predator.prototype.homeIn = function(){
+  var delX = this.currentTarge.pX - this.pX
+  var delY = this.currentTarge.pY - this.pY  
+  var mag = critterSeperation(this, this.currentTarge);
+  if (mag != 0){
+    this.vX = delX/mag
+    this.vY = delY/mag
+  };
+};
+
+Predator.prototype.chooseSpeed = function(){
+  var delX = this.currentTarge.pX - this.pX
+  var delY = this.currentTarge.pY - this.pY  
+  var mag = critterSeperation(this, this.currentTarge);
+  if (mag > 7.5) {
+    this.vX = this.vX*7.5
+    this.vY = this.vY*7.5
+  } else{
+    this.vX = this.vX*mag
+    this.vY = this.vY*mag
+  };
+};
+
+Predator.prototype.moveStep = function(){
+  this.pX = this.pX + this.vX
+  this.pY = this.pY + this.vY
+  this.view.update();
+};
+
+Predator.prototype.engageTarget = function(){
+  var mag = critterSeperation(this, this.currentTarge);
+  if (mag < 0.1){
+    if (this.currentTarge.timeOfDeath === 0 ){
+      this.currentTarge.field.depopulate(this.currentTarge.color);
+      this.killCount++;
+      this.chooseTarget()
+    } else {
+      this.chooseTarget()
+    };
+  };
+};
+
+Predator.prototype.chooseTarget = function(){
+  var initColor = this.initTarget.color;
+  var closest = 444;
+  var nextTarget
+  var candidates = this.initTarget.field.liveMoths
+  for (var index in candidates){
+    var distance = initColor.distanceFrom(candidates[index].color)
+    if (distance < closest){
+      nextTarget = candidates[index]
+      closest = distance
+    };
+  };
+  this.currentTarge = nextTarget
 };
 
 // ============ end object definitions

@@ -36,6 +36,30 @@
     ehB.2 iterates over each moth giving them a percent of dieing equal to e^([targetColor-self.color]^2/[SPRD]^2)√
     ehB.3 Math.Random generates a survival score, if survival score exceeds chance of death, they survive, else, die.√
     ehB.4 run repopulate method on field object √
+
+  new feature: predators
+    manually clicking on every moth is ridiculously tedious, it converges much too slowly.
+    predator class:
+      On click of a moth, the moth does not trigger a depopulation event, instead it produces a predator.
+      Instead a predator is produced at that point with that moth set to initial and current target and kill count of 0.
+      When the distance between a predator and it's current target is less than .1 it engages this comparison
+        and the current target is alive it triggers a depopulation event based on it's current target's color and increments it's kill count by 1.
+        and the current target is dead, it get's a new target as if it had killed the current target, but no increment.
+      if it's kill count is less than 10 it designates it's next current target as the living moth with the closest color vector to it's initial target.
+      it then moves towards the new target until it's within .1 of it.
+
+  how predators change the click flow
+    on click, new Predator(initTarget : this.moth)
+  how predators change the time loops.
+    tLb now includes moving predators after moths have moved
+    predator movement involves
+      1. decide direction of target
+      2. decide velocity (7.5 or enough to get on top of target)
+      3. determine if target is within .1 of predator location.
+        3.a.I if within range and moth is alive, kill moth and increment count
+        3.a.II if within range and moth is dead, nothing.
+        3.b if within range, after 3.a, choose new target.
+
    -->
 </head>
 

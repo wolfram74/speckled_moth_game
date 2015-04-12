@@ -44,10 +44,10 @@ describe("The field object", function(){
     expect(testField.liveMoths.length ).toBe(1);
   });
   it("Depopulate does effect moths with similar colors", function(){
-    var testField = new Field({"population": 1})
+    var testField = new Field({"population": 4})
     testField.populate()
     testField.depopulate(testField.liveMoths[0].color)
-    expect(testField.liveMoths.length ).toBe(0);
+    expect(testField.liveMoths.length ).toBe(3);
   });
   
   it("Responds to repopulate", function(){
@@ -71,15 +71,15 @@ describe("The field object", function(){
     testField.repopulate()
     expect(testField.liveMoths.length ).toBe(3);
   });
-  it("Repopulate restores destroyed population", function(){
-    var testField = new Field({"population": 3})
-    testField.populate()
-    testField.depopulate(testField.liveMoths[0].color)
-    testField.depopulate(testField.liveMoths[0].color)
-    testField.depopulate(testField.liveMoths[0].color)
-    testField.repopulate()
-    expect(testField.liveMoths.length ).toBe(3);
-  });
+  // it("Repopulate restores destroyed population", function(){
+  //   var testField = new Field({"population": 3})
+  //   testField.populate()
+  //   testField.depopulate(testField.liveMoths[0].color)
+  //   testField.depopulate(testField.liveMoths[0].color)
+  //   testField.depopulate(testField.liveMoths[0].color)
+  //   testField.repopulate()
+  //   expect(testField.liveMoths.length ).toBe(3);
+  // }); //test deprecated with change of moth.die and repopulation triggers
 });
 
 describe("The moth object", function(){
@@ -141,6 +141,19 @@ describe("utility functions", function(){
       valid = valid && vectorToRGB(vec).length === 19
     };
     expect(valid).toBe(true);
+  });
+
+});
+
+describe("the predator object", function(){
+  it("A predator object will eat 10 moths", function(){
+    var testField = new Field({population: 15})
+    testField.populate()
+    testField.addPredator(testField.liveMoths[0])
+    for(var t = 0; t < 1000; t++){
+      testField.movePredators()
+    }
+    expect(testField.liveMoths.length).toBe(5);
   });
 
 });
